@@ -4,6 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>0.0.1</Version>
+        <Title>KeylineClient</Title>
+        <Authors>The127</Authors>
+        <Description>Keyline api client.</Description>
+        <PackageLicenseUrl>https://github.com/The127/KeylineNet/blob/master/LICENSE.md</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/The127/KeylineNet</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

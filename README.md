@@ -11,12 +11,8 @@ A .NET client library for interacting with the Keyline API.
 
 ## Installation
 
-Clone the repository and build the solution:
-
 ```bash
-git clone https://github.com/The127/KeylineNet.git
-cd KeylineNet
-dotnet build
+dotnet add package KeylineClient --version 0.0.1
 ```
 
 ## Usage
