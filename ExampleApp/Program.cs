@@ -1,4 +1,5 @@
-﻿using KeylineClient.auth;
+﻿using KeylineClient;
+using KeylineClient.auth;
 
 namespace ExampleApp;
 
@@ -50,24 +51,14 @@ internal static class Program
 
     private static async Task Main()
     {
-        var authenticator = new ServiceUserAuthenticator(
-            "http://localhost:8081/oidc/keyline/token",
-            PrivateKeyPem,
-            "test-service-user",
-            "9ca0ce76-7f8d-4675-8af7-3b34b04ac976",
-            "admin-ui"
-        );
-        var authHandler = new AuthenticationHandler(authenticator)
-        {
-            InnerHandler = new HttpClientHandler(),
-        };
+        var keylineClient = new ClientFactory("http://localhost:8081", "keyline")
+            .WithServiceUserAuth(
+                "admin-ui",
+                "test-service-user", 
+                PrivateKeyProviderFactory.Static(PrivateKeyPem, "9ca0ce76-7f8d-4675-8af7-3b34b04ac976")
+            ).Create();
 
-        var httpClient = new HttpClient(authHandler);
-        httpClient.BaseAddress = new Uri("http://localhost:8081");
-
-        var client = new KeylineClient.KeylineClient(httpClient, "keyline");
-
-        var pagedResponse = await client.Projects["system"].Applications.List();
-        pagedResponse.Items.ForEach(x => Console.WriteLine(x.Name));
+        var applications = await keylineClient.Projects["system"].Applications.List();
+        applications.Items.ForEach(x => Console.WriteLine(x.Name));
     }
 }

@@ -24,33 +24,21 @@ dotnet build
 ### Basic Example
 
 ```csharp
+using KeylineClient;
 using KeylineClient.auth;
 
-// Create an authenticator
-var authenticator = new ServiceUserAuthenticator(
-    "http://localhost:8081/oidc/keyline/token",
-    privateKeyPem,
-    "test-service-user",
-    "service-user-id",
-    "client-id"
-);
-
-// Create an authentication handler
-var authHandler = new AuthenticationHandler(authenticator)
-{
-    InnerHandler = new HttpClientHandler(),
-};
-
-// Create HTTP client
-var httpClient = new HttpClient(authHandler);
-httpClient.BaseAddress = new Uri("http://localhost:8081");
-
 // Create Keyline client
-var client = new KeylineClient.KeylineClient(httpClient, "keyline");
+var keylineClient = new ClientFactory("http://localhost:8081", "keyline")
+    .WithServiceUserAuth(
+        "admin-ui",
+        "test-service-user", 
+        PrivateKeyProviderFactory.Static(PrivateKeyPem, "9ca0ce76-7f8d-4675-8af7-3b34b04ac976")
+    ).Create();
+
 
 // Use the client to interact with Keyline
-var pagedResponse = await client.Projects["system"].Applications.List();
-pagedResponse.Items.ForEach(x => Console.WriteLine(x.Name));
+var applications = await keylineClient.Projects["system"].Applications.List();
+applications.Items.ForEach(x => Console.WriteLine(x.Name));
 ```
 
 ## Development

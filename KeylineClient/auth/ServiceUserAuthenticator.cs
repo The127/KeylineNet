@@ -8,29 +8,11 @@ namespace KeylineClient.auth;
 
 public class ServiceUserAuthenticator(
     string tokenEndpointUrl,
-    Func<CancellationToken, Task<string>> privateKeyPemProvider,
+    IPrivateKeyProvider privateKeyProvider,
     string serviceUser,
-    string kid,
     string audience
 ) : IAuthenticator
 {
-    public ServiceUserAuthenticator(
-        string tokenEndpointUrl,
-        string privateKeyPem,
-        string serviceUser,
-        string kid,
-        string audience
-    )
-        : this(
-            tokenEndpointUrl,
-            _ => Task.FromResult(privateKeyPem),
-            serviceUser,
-            kid,
-            audience
-        )
-    {
-    }
-
     public async Task<AutenticationResult> AuthenticateAsync(CancellationToken cancellationToken = default)
     {
         var signedToken = await CreateSignedTokenAsync(cancellationToken);
@@ -38,15 +20,15 @@ public class ServiceUserAuthenticator(
         return new AutenticationResult(exchangedToken);
     }
 
-    private SigningCredentials ParsePrivateKeyPem(string privateKeyPem)
+    private SigningCredentials ParsePrivateKeyPem(KeyInfo keyInfo)
     {
         try
         {
             var rsa = RSA.Create();
-            rsa.ImportFromPem(privateKeyPem);
+            rsa.ImportFromPem(keyInfo.PrivateKeyPem);
             var rsaSecurityKey = new RsaSecurityKey(rsa)
             {
-                KeyId = kid,
+                KeyId = keyInfo.Kid,
             };
             return new SigningCredentials(
                 rsaSecurityKey, 
@@ -61,10 +43,10 @@ public class ServiceUserAuthenticator(
         try
         {
             var ec = ECDsa.Create();
-            ec.ImportFromPem(privateKeyPem);
+            ec.ImportFromPem(keyInfo.PrivateKeyPem);
             var ecDsaSecurityKey = new ECDsaSecurityKey(ec)
             {
-                KeyId = kid,
+                KeyId = keyInfo.Kid,
             };
             return new SigningCredentials(
                 ecDsaSecurityKey, 
@@ -81,8 +63,8 @@ public class ServiceUserAuthenticator(
     
     private async Task<string> CreateSignedTokenAsync(CancellationToken cancellationToken)
     {
-        var privateKeyPem = await privateKeyPemProvider(cancellationToken);
-        var privateKey = ParsePrivateKeyPem(privateKeyPem);
+        var keyInfo = await privateKeyProvider.GetPrivateKeyAsync(cancellationToken);
+        var privateKey = ParsePrivateKeyPem(keyInfo);
 
         
         var jsonWebTokenHandler = new JsonWebTokenHandler();
