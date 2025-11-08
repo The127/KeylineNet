@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace KeylineClient.clients;
 
 [UsedImplicitly]
-public class ApplicationListResponseDto
+public class ListApplicationsResponseDto
 {
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
@@ -25,25 +25,23 @@ public class ApplicationListResponseDto
 
 public interface IApplicationsClient
 {
-    Task<PagedResponse<ApplicationListResponseDto>> List(CancellationToken cancellationToken = default);
+    Task<PagedResponse<ListApplicationsResponseDto>> List(CancellationToken cancellationToken = default);
 }
 
 public class ApplicationsClient(
-    HttpClient http,
+    HttpClient httpClient,
     string virtualServer,
     string projectSlug
 ) : IApplicationsClient
 {
-    public async Task<PagedResponse<ApplicationListResponseDto>> List(CancellationToken cancellationToken = default)
+    public async Task<PagedResponse<ListApplicationsResponseDto>> List(CancellationToken cancellationToken = default)
     {
-        var response = await http.GetAsync(
-            $"api/virtual-servers/{virtualServer}/projects/{projectSlug}/applications", 
-            cancellationToken
-        );
+        var uri = new Uri($"api/virtual-servers/{virtualServer}/projects/{projectSlug}/applications", UriKind.Relative);
         
+        var response = await httpClient.GetAsync(uri, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<PagedResponse<ApplicationListResponseDto>>(cancellationToken: cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<PagedResponse<ListApplicationsResponseDto>>(cancellationToken);
         return result!;
     }
 }
