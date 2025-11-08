@@ -1,8 +1,10 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 
 namespace KeylineClient.clients;
 
+[UsedImplicitly]
 public class ListGroupsResponseDto
 {
     [JsonPropertyName("id")]

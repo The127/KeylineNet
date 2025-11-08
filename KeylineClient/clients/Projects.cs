@@ -1,8 +1,10 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 
 namespace KeylineClient.clients;
 
+[UsedImplicitly]
 public class ListProjectsResponseDto
 {
     [JsonPropertyName("id")] public Guid Id { get; set; }
@@ -14,6 +16,7 @@ public class ListProjectsResponseDto
     [JsonPropertyName("systemProject")] public bool SystemProject { get; set; }
 }
 
+[UsedImplicitly]
 public class CreateProjectRequestDto
 {
     [JsonPropertyName("slug")] public required string Slug { get; set; }

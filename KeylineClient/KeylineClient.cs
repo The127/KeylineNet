@@ -6,6 +6,7 @@ public interface IKeylineClient
 {
     IProjectsClient Projects { get; }
     IGroupsClient Groups { get; }
+    IUsersClient Users { get; }
 }
 
 public class KeylineClient(HttpClient httpClient, string virtualServer) : IKeylineClient
@@ -15,4 +16,7 @@ public class KeylineClient(HttpClient httpClient, string virtualServer) : IKeyli
     
     public IGroupsClient Groups =>
         new GroupsClient(httpClient, virtualServer);
+    
+    public IUsersClient Users =>
+        new UsersClient(httpClient, virtualServer);
 }
