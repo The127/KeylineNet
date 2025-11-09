@@ -75,6 +75,7 @@ public class ServiceUserAuthenticator(
                 new Claim("sub", serviceUser),
                 new Claim("scopes", "openid")
             ]),
+            NotBefore = DateTime.Now.AddMinutes(-5),
             Audience = audience,
             Expires = DateTime.UtcNow.AddMinutes(5),
             SigningCredentials = privateKey,
