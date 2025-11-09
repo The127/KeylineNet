@@ -5,22 +5,51 @@ using JetBrains.Annotations;
 namespace KeylineClient.clients;
 
 [UsedImplicitly]
+public class CreateUserRequestDto
+{
+    [JsonPropertyName("username")]
+    public required string Username { get; set; }
+
+    [JsonPropertyName("displayName")]
+    public required string DisplayName { get; set; }
+
+    [JsonPropertyName("email")]
+    public required string Email { get; set; }
+
+    [JsonPropertyName("emailVerified")]
+    public bool EmailVerified { get; set; }
+}
+
+[UsedImplicitly]
+public class CreateUserResponseDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+}
+
+[UsedImplicitly]
 public class ListUsersResponseDto
 {
-    [JsonPropertyName("id")] public Guid Id { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
-    [JsonPropertyName("username")] public required string Username { get; set; }
+    [JsonPropertyName("username")]
+    public required string Username { get; set; }
 
-    [JsonPropertyName("displayName")] public required string DisplayName { get; set; }
+    [JsonPropertyName("displayName")]
+    public required string DisplayName { get; set; }
 
-    [JsonPropertyName("primaryEmail")] public required string PrimaryEmail { get; set; }
+    [JsonPropertyName("primaryEmail")]
+    public required string PrimaryEmail { get; set; }
 
-    [JsonPropertyName("isServiceUser")] public bool IsServiceUser { get; set; }
+    [JsonPropertyName("isServiceUser")]
+    public bool IsServiceUser { get; set; }
 }
 
 public interface IUsersClient
 {
     Task<PagedResponse<ListUsersResponseDto>> ListAsync(CancellationToken cancellationToken = default);
+    Task<CreateUserResponseDto> CreateAsync(CreateUserRequestDto request, CancellationToken cancellationToken = default);
     IUserClient this[Guid userId] { get; }
 }
 
@@ -41,6 +70,17 @@ public class UsersClient(
         return result!;
     }
 
+    public async Task<CreateUserResponseDto> CreateAsync(CreateUserRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri($"api/virtual-servers/{virtualServer}/users", UriKind.Relative);
+        
+        var response = await httpClient.PostAsJsonAsync(uri, request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<CreateUserResponseDto>(cancellationToken);
+        return result!;
+    }
+
     public IUserClient this[Guid userId] =>
         new UserClient(httpClient, virtualServer, userId);
 }
@@ -49,26 +89,26 @@ public class GetUserResponseDto
 {
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
-    
+
     [JsonPropertyName("username")]
     public required string Username { get; set; }
-    
+
     [JsonPropertyName("displayName")]
     public required string DisplayName { get; set; }
-    
+
     [JsonPropertyName("primaryEmail")]
     public required string PrimaryEmail { get; set; }
-    
+
     [JsonPropertyName("emailVerified")]
     public bool EmailVerified { get; set; }
-    
+
     [JsonPropertyName("isServiceUser")]
     public bool IsServiceUser { get; set; }
 
-    [JsonPropertyName("createdAt")] 
+    [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; }
 
-    [JsonPropertyName("updatedAt")] 
+    [JsonPropertyName("updatedAt")]
     public DateTime UpdatedAt { get; set; }
 }
 
