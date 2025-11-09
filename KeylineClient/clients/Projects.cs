@@ -103,13 +103,14 @@ public interface IProjectClient
 {
     Task<GetProjectResponseDto> GetAsync(CancellationToken cancellationToken = default);
     IApplicationsClient Applications { get; }
+    IRolesClient Roles { get; }
 }
 
 public class ProjectClient(
     HttpClient httpClient,
     string virtualServer,
     string slug
-) : IProjectClient
+) : IProjectClient 
 {
     public async Task<GetProjectResponseDto> GetAsync(CancellationToken cancellationToken = default)
     {
@@ -124,4 +125,7 @@ public class ProjectClient(
 
     public IApplicationsClient Applications =>
         new ApplicationsClient(httpClient, virtualServer, slug);
+    
+    public IRolesClient Roles => 
+        new RolesClient(httpClient, virtualServer, slug);
 }
