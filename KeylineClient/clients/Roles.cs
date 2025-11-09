@@ -36,7 +36,7 @@ public class RolesClient(
 {
     public async Task<CreateRoleResponseDto> CreateAsync(CreateRoleRequestDto request, CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("api/virtual-servers/{virtualServer}/projects/{projectSlug}/roles", UriKind.Relative);
+        var uri = new Uri($"api/virtual-servers/{virtualServer}/projects/{projectSlug}/roles", UriKind.Relative);
         
         var response = await httpClient.PostAsJsonAsync(uri, request, cancellationToken);
         response.EnsureSuccessStatusCode();
