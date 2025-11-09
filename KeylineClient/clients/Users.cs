@@ -18,6 +18,19 @@ public class CreateUserRequestDto
 
     [JsonPropertyName("emailVerified")]
     public bool EmailVerified { get; set; }
+    
+    [JsonPropertyName("password")]
+    public CreateUserRequestDtoPassword? Password { get; set; }
+}
+
+[UsedImplicitly]
+public class CreateUserRequestDtoPassword
+{
+    [JsonPropertyName("plain")]
+    public required string Plain { get; set; }
+    
+    [JsonPropertyName("temporary")]
+    public required bool Temporary { get; set; }
 }
 
 [UsedImplicitly]
